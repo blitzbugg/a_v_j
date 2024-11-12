@@ -1,0 +1,63 @@
+   /* Basic styling for navigation bar and search box */
+   nav {
+    padding: 10px;
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ddd;
+}
+.search-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.search-box input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 300px;
+}
+.search-box input[type="submit"] {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+.search-box input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Styling for the recruiter cards */
+.container {
+    width: 85%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+.recruiter-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+.recruiter-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.recruiter-card h3 {
+    color: #007bff;
+    margin-bottom: 10px;
+}
+.recruiter-card p {
+    margin: 8px 0;
+    color: #555;
+}
+.details-item span {
+    font-weight: bold;
+    color: #333;
+}
