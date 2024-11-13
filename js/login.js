@@ -1,17 +1,17 @@
-const loginText = document.querySelector(".title-text .login");
-const loginForm = document.querySelector("form.login");
-const loginBtn = document.querySelector("label.login");
-const signupBtn = document.querySelector("label.signup");
-const signupLink = document.querySelector("form .signup-link a");
-signupBtn.onclick = (()=>{
-  loginForm.style.marginLeft = "-50%";
-  loginText.style.marginLeft = "-50%";
-});
-loginBtn.onclick = (()=>{
-  loginForm.style.marginLeft = "0%";
-  loginText.style.marginLeft = "0%";
-});
-signupLink.onclick = (()=>{
-  signupBtn.click();
-  return false;
+
+// Show corresponding form based on the role selected
+const roleSelector = document.getElementById('user_role');
+roleSelector.addEventListener('change', function() {
+    const recruiterForm = document.getElementById('recruiterForm');
+    const seekerForm = document.getElementById('seekerForm');
+    if (this.value === 'recruiter') {
+        recruiterForm.style.display = 'block';
+        seekerForm.style.display = 'none';
+    } else if (this.value === 'seeker') {
+        seekerForm.style.display = 'block';
+        recruiterForm.style.display = 'none';
+    } else {
+        recruiterForm.style.display = 'none';
+        seekerForm.style.display = 'none';
+    }
 });

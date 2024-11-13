@@ -25,28 +25,7 @@ if (!$res) {
     die("Query failed: " . mysqli_error($con));
 }
 
-// Check if form is submitted to add a seeker
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_seeker'])) {
-    // Get and sanitize form data
-    $seeker_username = mysqli_real_escape_string($con, $_POST['seeker_username']);
-    $seeker_password = password_hash(mysqli_real_escape_string($con, $_POST['seeker_password']), PASSWORD_DEFAULT); // Hash the password
-    $seeker_name = mysqli_real_escape_string($con, $_POST['seeker_name']);
-    $seeker_role = mysqli_real_escape_string($con, $_POST['seeker_role']);
-    $seeker_skills = mysqli_real_escape_string($con, $_POST['seeker_skills']);
-    $seeker_experience = mysqli_real_escape_string($con, $_POST['seeker_experience']);
-    $seeker_description = mysqli_real_escape_string($con, $_POST['seeker_description']);
-    $seeker_contact = mysqli_real_escape_string($con, $_POST['seeker_contact']);
 
-    // Insert data into the seeker table
-    $insert_query = "INSERT INTO seeker (seeker_username, seeker_password, seeker_name, seeker_role, seeker_skills, seeker_experience, seeker_description, seeker_contact) 
-                     VALUES ('$seeker_username', '$seeker_password', '$seeker_name', '$seeker_role', '$seeker_skills', '$seeker_experience', '$seeker_description', '$seeker_contact')";
-
-    if (mysqli_query($con, $insert_query)) {
-        echo "<script>alert('Seeker added successfully!');</script>";
-    } else {
-        echo "<script>alert('Error: " . mysqli_error($con) . "');</script>";
-    }
-}
 
 // Close the connection
 mysqli_close($con);
@@ -145,7 +124,6 @@ mysqli_close($con);
         <form class="search-box" action="" method="get">
             <input type="text" name="query" placeholder="Search...">
             <input type="submit" value="Search">
-            <button type="button" class="post-button" onclick="document.getElementById('myModal').style.display='block'">Post</button>
         </form>
     </nav>
 
@@ -169,42 +147,7 @@ mysqli_close($con);
     }
     ?>
     
-    <!-- Modal for adding seeker -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
-            <h2>Add Seeker</h2>
-            <form method="POST" action="">
-                <label for="seeker_username">Username:</label><br>
-                <input type="text" id="seeker_username" name="seeker_username" required><br>
-                <label for="seeker_password">Password:</label><br>
-                <input type="password" id="seeker_password" name="seeker_password" required><br>
-                <label for="seeker_name">Name:</label><br>
-                <input type="text" id="seeker_name" name="seeker_name" required><br>
-                <label for="seeker_role">Role:</label><br>
-                <input type="text" id="seeker_role" name="seeker_role" required><br>
-                <label for="seeker_skills">Skills:</label><br>
-                <input type="text" id="seeker_skills" name="seeker_skills" required><br>
-                <label for="seeker_experience">Experience:</label><br>
-                <input type="text" id="seeker_experience" name="seeker_experience" required><br>
-                <label for="seeker_description">Description:</label><br>
-                <textarea id="seeker_description" name="seeker_description" required></textarea><br>
-                <label for="seeker_contact">Contact:</label><br>
-                <input type="text" id="seeker_contact" name="seeker_contact" required><br>
-                <input type="submit" value="Add Seeker" name="add_seeker">
-            </form>
-        </div>
-    </div>
 
-    <script>
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            var modal = document.getElementById('myModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        }
-    </script>
 </body>
 </html>
 

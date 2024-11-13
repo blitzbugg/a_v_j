@@ -13,13 +13,7 @@
         <div class="title signup">Signup Form</div>
       </div>
       <div class="form-container">
-        <div class="slide-controls">
-          <input type="radio" name="slide" id="login" checked>
-          <input type="radio" name="slide" id="signup">
-          <label for="login" class="slide login">Login</label>
-          <label for="signup" class="slide signup">Signup</label>
-          <div class="slider-tab"></div>
-        </div>
+    
         <div class="form-inner">
           <!-- Login Form -->
           <form action="" method="POST" class="login">
@@ -34,23 +28,7 @@
               <div class="btn-layer"></div>
               <input type="submit" name="btn" value="Login">
             </div>
-            <div class="signup-link">Not a member? <a href="">Signup now</a></div>
-          </form>
-          <!-- Signup Form -->
-          <form action="#" method="POST" class="signup">
-            <div class="field">
-              <input type="text" name="signup_email" placeholder="Email Address" required>
-            </div>
-            <div class="field">
-              <input type="password" name="signup_password" placeholder="Password" required>
-            </div>
-            <div class="field">
-              <input type="password" name="confirm_password" placeholder="Confirm password" required>
-            </div>
-            <div class="field btn">
-              <div class="btn-layer"></div>
-              <input type="submit" name="signup_btn" value="Signup">
-            </div>
+            <div class="signup-link">Not a member? <a href="signup.php">Signup now</a></div>
           </form>
         </div>
       </div>
@@ -90,7 +68,7 @@
             } else {
                 echo "<script>alert('Invalid username or password.');</script>";
             }
-        }
+        } 
     }
 
     // Close the connection

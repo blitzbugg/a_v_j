@@ -7,7 +7,7 @@ if (!$con) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Initialize the query string
+// Initialize the query string for seekers
 $str = "SELECT seeker_name, seeker_role, seeker_skills, seeker_experience, seeker_description, seeker_contact FROM seeker";
 
 // Check if a search query is submitted
@@ -17,34 +17,30 @@ if (isset($_GET['query'])) {
             FROM seeker WHERE seeker_role LIKE '%$search%'";
 }
 
-// Execute the query
+// Execute the seeker query
 $res = mysqli_query($con, $str);
 
-// Check for query execution errors
-if (!$res) {
-    die("Query failed: " . mysqli_error($con));
-}
+// Initialize variable for recruiter posts
+$recruiter_posts = [];
 
-// Check if form is submitted to add a seeker
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_seeker'])) {
-    // Get and sanitize form data
-    $seeker_username = mysqli_real_escape_string($con, $_POST['seeker_username']);
-    $seeker_password = password_hash(mysqli_real_escape_string($con, $_POST['seeker_password']), PASSWORD_DEFAULT); // Hash the password
-    $seeker_name = mysqli_real_escape_string($con, $_POST['seeker_name']);
-    $seeker_role = mysqli_real_escape_string($con, $_POST['seeker_role']);
-    $seeker_skills = mysqli_real_escape_string($con, $_POST['seeker_skills']);
-    $seeker_experience = mysqli_real_escape_string($con, $_POST['seeker_experience']);
-    $seeker_description = mysqli_real_escape_string($con, $_POST['seeker_description']);
-    $seeker_contact = mysqli_real_escape_string($con, $_POST['seeker_contact']);
+// Check if the "Your Posts" button was clicked
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['view_your_posts'])) {
+    // Get the recruiter username from the hidden form field
+    $username = mysqli_real_escape_string($con, $_POST['u']);
+    
+    // Fetch recruiter posts based on the username
+    $recruiter_query = "SELECT recruiter_name, job_title, job_description, recruiter_contact 
+                        FROM recruiter WHERE recruiter_username = '$username'";
 
-    // Insert data into the seeker table
-    $insert_query = "INSERT INTO seeker (seeker_username, seeker_password, seeker_name, seeker_role, seeker_skills, seeker_experience, seeker_description, seeker_contact) 
-                     VALUES ('$seeker_username', '$seeker_password', '$seeker_name', '$seeker_role', '$seeker_skills', '$seeker_experience', '$seeker_description', '$seeker_contact')";
+    // Execute the recruiter query
+    $recruiter_res = mysqli_query($con, $recruiter_query);
 
-    if (mysqli_query($con, $insert_query)) {
-        echo "<script>alert('Seeker added successfully!');</script>";
+    // Check for query execution errors
+    if ($recruiter_res) {
+        // Fetch all matching recruiter posts
+        $recruiter_posts = mysqli_fetch_all($recruiter_res, MYSQLI_ASSOC);
     } else {
-        echo "<script>alert('Error: " . mysqli_error($con) . "');</script>";
+        echo "<script>alert('Error fetching recruiter posts: " . mysqli_error($con) . "');</script>";
     }
 }
 
@@ -56,106 +52,31 @@ mysqli_close($con);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seeker Details</title>
-    <style>
-        /* Basic styling for the navigation bar and search box */
-        nav {
-            padding: 10px;
-            background-color: #f4f4f4;
-            border-bottom: 1px solid #ddd;
-        }
-        .search-box {
-            display: flex;
-            align-items: center;
-        }
-        .search-box input[type="text"] {
-            padding: 5px;
-            margin-right: 5px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        .search-box input[type="submit"], .post-button {
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            background-color: #007bff;
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-left: 5px;
-        }
-        .search-box input[type="submit"]:hover, .post-button:hover {
-            background-color: #0056b3;
-        }
-
-        /* Styling for the details */
-        .details-container {
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
-        .details-container h2 {
-            margin-top: 0;
-        }
-        .details-item {
-            margin-bottom: 10px;
-        }
-        .details-item span {
-            font-weight: bold;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1; 
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgba(0,0,0,0.4); 
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto; 
-            padding: 20px;
-            border: 1px solid #888;
-            width: 400px; 
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
+    <title>Seeker and Recruiter Details</title>
+    <link rel="stylesheet" href="css/seekerlog.css">
 </head>
 <body>
     <nav>
         <form class="search-box" action="" method="get">
             <input type="text" name="query" placeholder="Search...">
             <input type="submit" value="Search">
-            <button type="button" class="post-button" onclick="document.getElementById('myModal').style.display='block'">New Post</button>
+            <button type="button" class="post-button">New Post</button>
+        </form>
+
+        <!-- Form for "Your Posts" button to view recruiter posts -->
+        <form action="" method="post" style="display: inline;">
+            <input type="hidden" name="u" value="<?php echo htmlspecialchars($_GET['u'] ?? ''); ?>">
+            <button type="submit" name="view_your_posts" class="your-posts-button">Your Posts</button>
         </form>
     </nav>
 
+    <h2>Seeker Details</h2>
     <?php
-    // Check if any records were found
+    // Display seeker details if any records were found
     if (mysqli_num_rows($res) > 0) {
-        // Generate the details containers
         while ($row = mysqli_fetch_assoc($res)) {
             echo '<div class="details-container">';
-            echo '<h2>Seeker Details</h2>';
+            echo '<h3>Seeker Details</h3>';
             echo '<div class="details-item"><span>Seeker Name:</span> ' . htmlspecialchars($row['seeker_name']) . '</div>';
             echo '<div class="details-item"><span>Role:</span> ' . htmlspecialchars($row['seeker_role']) . '</div>';
             echo '<div class="details-item"><span>Skills:</span> ' . htmlspecialchars($row['seeker_skills']) . '</div>';
@@ -168,43 +89,30 @@ mysqli_close($con);
         echo '<p style="text-align: center;">No seekers found.</p>';
     }
     ?>
-    
-    <!-- Modal for adding seeker -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
-            <h2>Add Seeker</h2>
-            <form method="POST" action="">
-                <label for="seeker_username">Username:</label><br>
-                <input type="text" id="seeker_username" name="seeker_username" required><br>
-                <label for="seeker_password">Password:</label><br>
-                <input type="password" id="seeker_password" name="seeker_password" required><br>
-                <label for="seeker_name">Name:</label><br>
-                <input type="text" id="seeker_name" name="seeker_name" required><br>
-                <label for="seeker_role">Role:</label><br>
-                <input type="text" id="seeker_role" name="seeker_role" required><br>
-                <label for="seeker_skills">Skills:</label><br>
-                <input type="text" id="seeker_skills" name="seeker_skills" required><br>
-                <label for="seeker_experience">Experience:</label><br>
-                <input type="text" id="seeker_experience" name="seeker_experience" required><br>
-                <label for="seeker_description">Description:</label><br>
-                <textarea id="seeker_description" name="seeker_description" required></textarea><br>
-                <label for="seeker_contact">Contact:</label><br>
-                <input type="text" id="seeker_contact" name="seeker_contact" required><br>
-                <input type="submit" value="Add Seeker" name="add_seeker">
-            </form>
-        </div>
-    </div>
 
-    <script>
-        // Close modal when clicking outside of it
-        window.onclick = function(event) {
-            var modal = document.getElementById('myModal');
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
+    
+    <?php
+    // Display recruiter posts if the button was clicked and posts were found
+    if (!empty($recruiter_posts)) {
+        echo '<h2>Recruiter Posts</h2>';
+        foreach ($recruiter_posts as $post) {
+            echo '<div class="details-container">';
+            echo '<h3>Recruiter Post</h3>';
+            echo '<div class="details-item"><span>Recruiter Name:</span> ' . htmlspecialchars($post['recruiter_name']) . '</div>';
+            echo '<div class="details-item"><span>Job Title:</span> ' . htmlspecialchars($post['job_title']) . '</div>';
+            echo '<div class="details-item"><span>Job Description:</span> ' . htmlspecialchars($post['job_description']) . '</div>';
+            echo '<div class="details-item"><span>Contact:</span> ' . htmlspecialchars($post['recruiter_contact']) . '</div>';
+            echo '</div>';
         }
-    </script>
-</body>
-</html>
+    } elseif ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['view_your_posts'])) {
+        // Display "No posts found" only if the button was clicked but no posts are available
+        echo '<p style="text-align: center;">No posts found for this recruiter.</p>';
+    }
+    ?>
+    </body>
+    </html>
+
+
+
+
 
